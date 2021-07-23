@@ -1,3 +1,39 @@
-cd violetta-ta.github.io
+<html>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+<style> rect {fill: lightblue; stroke: black; }</style>
+<body>
+<svg width=300 height=300>
+</svg>
+<script>
+var data = [4,8,15,16,23,42];
 
-echo "Hello World" > index.html
+axe_x_domain = [0,1,2,3,4,5]
+axe_y_domain = [0,42]
+x_range = [0,200]
+y_range = [180.952,0]
+y_domain = data
+height_domain = [42,4]
+height_range = [200,19.0476]
+var height = 200
+
+var x_axe = d3.scaleBand().domain(axe_x_domain).range(x_range);
+var y_axe = d3.scaleLinear().domain(y_domain).range(y_range);
+ys = d3.scaleLinear().domain(height_domain).range(height_range);
+y = d3.scaleLinear().domain([0, d3.max(data, d => d)]).range([height, 0]);
+
+
+
+d3.select("svg").append("g").attr("transform", "translate("+50+","+50+")").selectAll().data(data).enter().append("rect")
+    .attr('x',function(d,i) {return x_axe(i);})
+    .attr('y',function(d) { return height-ys(d); })
+    .attr("width", x_axe.bandwidth())
+    .attr('height',function(d) {return ys(d);});
+
+
+var left_axis = d3.select("svg").append("g").attr("transform", "translate("+50+","+50+")").call(d3.axisLeft(y));
+
+var bottom_axis = d3.select("svg").append("g").attr("transform", "translate("+50+","+250+")").call(d3.axisBottom(x_axe));
+
+</script>
+</body>
+</html>
