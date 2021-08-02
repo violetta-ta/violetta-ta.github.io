@@ -81,7 +81,7 @@ console.log(margin);
       data = await d3.csv("Stars_overall.csv");
 
         scale_stars.domain(data.map(function(d) { return d.Stars; }));
-        scale_y.domain([0, d3.max(data, function(d) { return d.Business; })]);
+        scale_y.domain([0,1000]);
 
         var Tech_values = data.map(rec => rec["Tech"])
         var Finance_values = data.map(rec => rec["Finance"])
