@@ -4,36 +4,46 @@
   <meta charset="UTF-8">
 </head>
     <style>
-        .bar {fill: steelblue;}
-        .button {
+    .bar {fill: steelblue;}
+    .circle {fill: blue;
+      opacity:0.2;
+    }
+    .button {
 
-          font: 24px;
-          color: blue;
-          width:100px;
-          height:50px;
-        }
-        .tooltip {
-  	     background-color:#aaa;
-  	     position: absolute;
-  	     padding: 1em;
-  	     left: 20%;
-  	     top: 30%;
-  	     transform: translateX(-50%);
-  	 }
-     .annotations {
-      background-color:#aaa;
-      position: absolute;
-      padding: 1em;
-      left: 20%;
-      top: 30%;
-      transform: translateX(-30%);
-      transform: translateY(-30%);
-      font:5px;
-      border-radius: 5px;}
+      font: 36px;
+      color: blue;
+      width:100px;
+      height:50px;
+
+    }
+
+    .tooltip {
+     background-color:#aaa;
+     position: absolute;
+     padding: 1em;
+     left: 20%;
+     top: 30%;
+     transform: translateX(-50%);
+     border-radius: 5px;
+     text-align: center;
+ }
+ .annotations {
+  background-color:#aaa;
+  position: absolute;
+  padding: 1em;
+  left: 20%;
+  top: 30%;
+  transform: translateX(-30%);
+  transform: translateY(-30%);
+  font:5px;
+  border-radius: 5px;
+  text-align: center;
+}
+
 </style>
 <script src='https://d3js.org/d3.v5.min.js'></script>
 
-<body onload='pageTech()'>
+<body onload='page()'>
   <h1 id="first_page_title">Here is what Tech domain offer:</h1>
 
 	<div id="description1" width="30" height="100" display=inline position=absolute>
@@ -43,7 +53,8 @@
 	</div>
   <svg width="700" height="500"></svg>
   <div id="reference">This dataset was obtained from Kaggle  <a href="https://www.kaggle.com/songseungwon/2020-udemy-courses-dataset">https://www.kaggle.com/songseungwon/2020-udemy-courses-dataset</a>
-	</div>
+<p>Click on the bars to know more!</p>
+  </div>
 <button class="button"><a class="button" href="index.html" role="button">To Start</a></button>
 <script>
 
@@ -52,7 +63,7 @@ const color = ["steelblue", "green", "brown"];
 
 
 
-async function pageTech(){
+async function page(){
 
 
   var svg = d3.select("svg").style("z-index", -1);
@@ -74,6 +85,9 @@ async function pageTech(){
         scale_stars.domain(data.map(function(d) { return d.Stars; }));
         scale_tech.domain([0, d3.max(data, function(d) { return d.Tech; })]);
 
+        var Tech_values = data.map(rec => rec["Tech"])
+        var Finance_values = data.map(rec => rec["Finance"])
+        var Business_values = data.map(rec => rec["Business"])
 
     var left_axis = g.call(d3.axisLeft(scale_tech))
     .append("text")
@@ -105,7 +119,8 @@ async function pageTech(){
          .attr("height", function(d) { return height - scale_tech(d.Tech); })
          .attr("id", function(d,i) { return (i); })
          .style("fill", color[0])
-         .style("opacity","0.7");
+         .style("opacity","0.7")
+          .on("click", onClick);
 
 var tooltip = d3.selectAll("body")
                   .append("div")
@@ -152,10 +167,24 @@ var tooltip = d3.selectAll("body")
                      .text("The biggest number of courses have rating above 3 stars!")
                      .style("color", "black")
                      .style("left", "530px")
-                     .style("top", "150px")
+                     .style("top", "250px")
                      .style("position", "absolute")
                      .style("width", "150px")
-                     .style("top", "300px")
+                     .style("height", "100px")
+ function onClick() {
+         var rectangle = d3.select(this).attr("id")
+         console.log(rectangle)
+         console.log(Tech_values[rectangle])
+         tech = Tech_values[rectangle];
+         fin = Finance_values[rectangle];
+         bus = Business_values[rectangle];
+         tooltip.style("opacity", 1)
+         .style("left", d3.mouse(this)[0]+20+"px")
+         .style("top", d3.mouse(this)[1]+30+"px")
+         .style("font-size", "15px")
+         .text("Courses in Tech: "+tech + ". Courses in Business: " +bus+". Courses in Finance: "+fin)
+         .style("width", "150px")
+         .style("height", "100px")              }
 
   };
 </script>
