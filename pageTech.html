@@ -74,7 +74,7 @@ async function page(){
 
 
     var scale_stars = d3.scaleBand().range([0, width]).padding(0.3);
-    var scale_tech = d3.scaleLinear().range([height, 0]);
+    var scale_y = d3.scaleLinear().range([height, 0]);
 
     var g = svg.append("g")
             .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
