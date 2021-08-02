@@ -1,0 +1,192 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="UTF-8">
+</head>
+    <style>
+        .bar {fill: steelblue;}
+        .circle {fill: blue;
+          opacity:0.2;
+        }
+        .button {
+
+          font: 36px;
+          color: blue;
+          width:100px;
+          height:50px;
+
+        }
+
+        .tooltip {
+  	     background-color:#aaa;
+  	     position: absolute;
+  	     padding: 1em;
+  	     left: 20%;
+  	     top: 30%;
+  	     transform: translateX(-50%);
+         border-radius: 5px;
+  	 }
+     .annotations {
+      background-color:#aaa;
+      position: absolute;
+      padding: 1em;
+      left: 20%;
+      top: 30%;
+      transform: translateX(-30%);
+      transform: translateY(-30%);
+      font:5px;
+      border-radius: 5px;
+
+        }
+</style>
+<script src='https://d3js.org/d3.v5.min.js'></script>
+
+<body onload='pageTech()'>
+  <h1 id="first_page_title">Here is what Finance domain offer:</h1>
+
+	<div id="description1" width="30" height="100" display=inline position=absolute>
+  <p id="description">On this page, you can figure out how many courses have the highest score and how many are outsiders. </br> If you will notice, Finance courses scores distribution is different from Tech and Business ones. <br> Hover over the bars to see the exact number of courses scored with this number of stars. </p>
+
+	</div>
+  <svg width="700" height="500"></svg>
+  <div id="reference">This dataset was obtained from Kaggle  <a href="https://www.kaggle.com/songseungwon/2020-udemy-courses-dataset">https://www.kaggle.com/songseungwon/2020-udemy-courses-dataset</a>
+	</div>
+<button class="button"><a class="button" href="index.html" role="button">To Start</a></button>
+<script>
+
+const Topics = ["Tech", "Business", "Finance"];
+const color = ["steelblue", "green", "brown"];
+
+
+
+async function pageTech(){
+
+
+  var svg = d3.select("svg").style("z-index", -1);
+  var margin = {top: 50, right: 150, bottom: 50, left: 50};
+
+  var width = svg.attr("width") - margin.right-margin.left;
+  var height = svg.attr("height") - margin.bottom-margin.top;
+
+
+    var scale_stars = d3.scaleBand().range([0, width]).padding(0.3);
+    var scale_y = d3.scaleLinear().range([height, 0]);
+
+    var g = svg.append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+      data = await d3.csv("Stars_overall.csv");
+
+        scale_stars.domain(data.map(function(d) { return d.Stars; }));
+        scale_y.domain([0,1000]);
+
+
+
+var array_all =  d3.map(data, function(d) { return (d.Tech); });
+var col2Val = data.map(rec => rec["Tech"])
+console.log(array_all.keys() )
+console.log(col2Val )
+
+    var left_axis = g.call(d3.axisLeft(scale_y))
+    .append("text")
+    .attr("y", margin.left-30)
+    .attr("dy", "-5.1em")
+    .attr("text-anchor", "middle")
+    .attr("stroke", "black")
+    .text("Number of courses");
+
+    var bottom_axis = g.append("g").
+    attr("transform", "translate(0," + height + ")")
+    .call(d3.axisBottom(scale_stars).tickValues([1,2,3,4,5]).tickFormat( d3.format(".0f")))
+    .append("text")
+    .attr("y", margin.bottom-20 )
+    .attr("x", width-100 )
+    .attr("stroke", "black")
+    .attr("text-anchor", "start")
+    .text("Stars");
+
+    bar_chart = g.append("g").selectAll(".bar")
+         .data(data)
+         .enter().append("rect")
+         .attr("class", "bar")
+         .on("mouseover", onMouseOver)
+         .on("mouseout", onMouseOut)
+         .attr("x", function(d) { return scale_stars(d.Stars); })
+         .attr("y", function(d) { return scale_y(d.Finance); })
+         .attr("width", scale_stars.bandwidth())
+         .attr("height", function(d) { return height - scale_y(d.Finance); })
+         .attr("id", function(d,i) { return (i); })
+         .style("fill", color[2])
+         .style("opacity","0.7");
+
+var tooltip = d3.selectAll("body")
+                  .append("div")
+         				 .style("opacity", 0)
+         	       .attr("class", "tooltip")
+         	       .text("text")
+         				 .style("color", "black")
+         				 .style("position", "absolute")
+
+    function onMouseOver(d, i) {
+        d3.select(this)
+          .transition()
+          .duration(300)
+          .attr('width', scale_stars.bandwidth() + 5)
+          .style("opacity",1)
+
+
+        tooltip.style("opacity", 1)
+        .style("left", d3.mouse(this)[0]+20+"px")
+        .style("top", d3.mouse(this)[1]+30+"px")
+        .style("font-size", "15px")
+        .text("Number of courses is " + d.Finance);
+        ;
+    }
+
+
+    function onMouseOut(d, i) {
+
+        d3.select(this).attr('class', 'bar');
+        d3.select(this)
+          .transition()
+          .duration(300)
+          .attr('width', scale_stars.bandwidth())
+          .style("opacity",0.7)
+
+      tooltip.style("opacity", 0);
+
+    }
+
+    var annotation = d3.select("div")
+                      .append("div")
+                     .style("opacity", 1)
+                     .attr("class", "annotations")
+                     .text("Probably in Finance many courses were added recently, so no stars yet!")
+                     .style("color", "black")
+                     .style("left", 70+"px")
+                     .style("top", 50+"px")
+                     .style("position", "absolute")
+                     .style("width", "150px")
+                     .style("top", "300px")
+
+
+
+
+  var annotation = d3.select("body")
+                    .append("div")
+                    .style("opacity", 1)
+                    .attr("class", "annotations")
+                    .text("Here, the maximum is much lower than for Tech and Business")
+                    .style("color", "black")
+                    .style("left", svg.select("rect[id='40']").attr("x")-30+"px")
+                    .style("top", svg.select("rect[id='40']").attr("y")-30+"px")
+
+                    .style("width", "150px")
+                    .style("top", "300px")
+                    .style("position", "absolute")
+
+
+}
+</script>
+</body>
+</html>
