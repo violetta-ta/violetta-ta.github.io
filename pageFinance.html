@@ -5,7 +5,7 @@
 </head>
     <style>
         .bar {fill: steelblue;}
-        
+
         .button {
 
           font: 36px;
@@ -88,7 +88,7 @@ async function pageTech(){
 var Tech_values = data.map(rec => rec["Tech"])
 var Finance_values = data.map(rec => rec["Finance"])
 var Business_values = data.map(rec => rec["Business"])
-
+overall_count = { "Tech": 9964, "Business": 9970, "Finance": 5887 }
 
 console.log(Tech_values )
 
@@ -199,14 +199,14 @@ function onClick() {
       var rectangle = d3.select(this).attr("id")
       console.log(rectangle)
       console.log(Tech_values[rectangle])
-      tech = Tech_values[rectangle];
-      fin = Finance_values[rectangle];
-      bus = Business_values[rectangle];
+      tech = Math.round(100 * parseInt(Tech_values[rectangle],10)*10/(overall_count["Tech"]))/10;
+      fin = Math.round(100* parseInt(Finance_values[rectangle],10)*10/(overall_count["Finance"]))/10;
+      bus = Math.round(100* parseInt(Business_values[rectangle],10)*10/(overall_count["Business"]))/10;
       tooltip.style("opacity", 1)
       .style("left", d3.mouse(this)[0]+20+"px")
       .style("top", d3.mouse(this)[1]+30+"px")
       .style("font-size", "15px")
-      .text("Courses in Tech: "+tech + ". Courses in Business: " +bus+". Courses in Finance: "+fin)
+      .text("This score have: "+tech + "% courses in Tech, "+bus + "% courses in Business, " +bus+"% courses in Finance.")
       .style("width", "150px")
       .style("height", "100px")              }
 
