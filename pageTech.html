@@ -82,14 +82,14 @@ async function page(){
       data = await d3.csv("Stars_overall.csv");
 
         scale_stars.domain(data.map(function(d) { return d.Stars; }));
-        scale_tech.domain([0, d3.max(data, function(d) { return d.Tech; })]);
+        scale_y.domain([0,1000]);
 
         var Tech_values = data.map(rec => rec["Tech"])
         var Finance_values = data.map(rec => rec["Finance"])
         var Business_values = data.map(rec => rec["Business"])
 overall_count = { "Tech": 9964, "Business": 9970, "Finance": 5887 }
 
-    var left_axis = g.call(d3.axisLeft(scale_tech))
+    var left_axis = g.call(d3.axisLeft(scale_y))
     .append("text")
     .attr("y", margin.left-30)
     .attr("dy", "-5.1em")
@@ -114,9 +114,9 @@ overall_count = { "Tech": 9964, "Business": 9970, "Finance": 5887 }
          .on("mouseover", onMouseOver)
          .on("mouseout", onMouseOut)
          .attr("x", function(d) { return scale_stars(d.Stars); })
-         .attr("y", function(d) { return scale_tech(d.Tech); })
+         .attr("y", function(d) { return scale_y(d.Tech); })
          .attr("width", scale_stars.bandwidth())
-         .attr("height", function(d) { return height - scale_tech(d.Tech); })
+         .attr("height", function(d) { return height - scale_y(d.Tech); })
          .attr("id", function(d,i) { return (i); })
          .style("fill", color[0])
          .style("opacity","0.7")
